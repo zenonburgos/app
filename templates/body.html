@@ -1,0 +1,108 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block body %}
+    <body data-layout="horizontal" data-topbar="dark">
+
+    <div class="container-fluid">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+
+            {% include 'header.html' %}
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+
+                <div class="page-content">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-flex align-items-center justify-content-between">
+                                    <h4 class="page-title mb-0 font-size-16">
+                                        Bienvenido(a) <small>{{ request.user.get_full_name }}</small>{% if entity %}, estás en módulo
+                                        <strong>{{ entity }}</strong>{% endif %}
+                                    </h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        {% if entity %}
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Inicio</a></li>
+                                        <li class="breadcrumb-item active"><a href="{{ list_url }}">{{ entity }}</a></li>
+                                        {% endif %}
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+                    {% block content %}
+
+                    {% endblock %}
+                </div>
+                <!-- End Page-content -->
+
+                {% include 'footer.html' %}
+            </div>
+            <!-- end main content-->
+
+        </div>
+        <!-- END layout-wrapper -->
+
+    </div>
+    <!-- end container-fluid -->
+
+    <!-- JAVASCRIPT -->
+
+    <!-- JQuery -->
+    <script src="{% static 'lib/plantilla/libs/jquery/jquery.min.js' %}"></script>
+
+    <script src="{% static 'lib/plantilla/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/metismenu/metisMenu.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/simplebar/simplebar.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/node-waves/waves.min.js' %}"></script>
+
+    <!-- Jquery confirm -->
+    <link rel="stylesheet" href="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.css' %}" />
+    <script src="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.js' %}"></script>
+
+
+
+    <!-- Mis funciones -->
+    <script src="{% static 'js/functions.js' %}"></script>
+
+
+
+{#    <!-- Datatable init js -->#}
+{#    <script src="{% static 'lib/plantilla/js/pages/datatables.init.js' %}"></script>#}
+
+    <!-- App js -->
+    <script src="{% static 'lib/plantilla/js/app.js' %}"></script>
+
+    <!-- Select2 -->
+    <script src="{% static 'lib/plantilla/libs/select2/js/select2.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/js/pages/form-advanced.init.js' %}"></script>
+
+    <!-- Block javascript -->
+    {% block javascript %}
+
+    {% endblock %}
+{#    Mensages de error sobre el acceso a los módulos controlado por Mixins#}
+    <script>
+        {% if messages %}
+            var html = '<p>';
+            {% for message in messages %}
+                html += '{{ message }}<br>';
+            {% endfor %}
+            html+='</p>';
+            Swal.fire({
+                title: '¡Error!',
+                html: html,
+                icon: 'error'
+            });
+        {% endif %}
+    </script>
+
+</body>
+{% endblock %}

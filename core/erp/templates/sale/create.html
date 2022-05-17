@@ -1,0 +1,148 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block head_list %}
+    <link href="{% static 'lib/tempusdominus-bootstrap-4/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'lib/bootstrap-touchspin-4.3.0/jquery.bootstrap-touchspin.css' %}" rel="stylesheet"/>
+    <link href="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <form method="post">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">
+
+                    {% if action == 'add' %}
+                        <i class="fas fa-plus"></i>
+                        {{ title }} / {{ date_now }}
+                    {% else %}
+                        <i class="fas fa-edit"></i>
+                        {{ title }} / {{ date_now }} Venta No. {{ sale.id }}
+                    {% endif %}
+
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="card card-secondary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-box"></i> Lista de productos</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Buscador de Productos</label>
+                                    <div class="input-group">
+                                       <!-- <input type="text" class="form-control" name="search"
+                                               placeholder="Ingrese una palabra clave para búsqueda de productos"
+                                               autocomplete="off">
+                                        <span class="input-group-append">
+                                        <button type="button" class="btn btn-danger btnClearSearch"><i
+                                                class="fas fa-times"></i></button>
+                                        </span> -->
+                                        <select class="form-control select2" name="search">
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr>
+                                <button type="button" class="btn btn-danger btn-sm btnRemoveAll">
+                                    <i class="fas fa-trash"></i> Limpiar factura
+                                </button>
+                                <hr>
+                                <table class="table table-bordered" id="tblProducts">
+                                    <thead>
+                                    <tr>
+                                        <th>Eliminar</th>
+                                        <th>Producto</th>
+                                        <th>Modelo</th>
+                                        <th>Precio Ven.</th>
+                                        <th>Cantidad</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="card card-secondary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Datos de la factura</h3>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" name="action" value="{{ action }}">
+                                <div class="form-group">
+                                    <label>Fecha de la venta</label>
+                                    {{ form.date_joined }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Cliente</label>
+                                    {{ form.cli }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Subtotal</label>
+                                    {{ form.subtotal }}
+                                </div>
+                                <div class="form-group">
+                                    <label>IVA</label>
+                                    {{ form.iva }}
+                                </div>
+                                <div class="form-group">
+                                    <label>IVA calculado</label>
+                                    <input type="text" class="form-control inputNum" readonly name="ivacalc"
+                                           value="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Total a pagar</label>
+                                    {{ form.total }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar registro
+                </button>
+                <a href="{{ list_url }}" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block javascript %}
+    <!-- Required datatable js -->
+    <script src="{% static 'lib/plantilla/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Responsive examples -->
+    <script src="{% static 'lib/plantilla/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+    <script src="{% static 'lib/plantilla/libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'lib/plantilla/js/pages/datatables.init.js' %}"></script>
+
+    <script src="{% static 'lib/moment-2.25.3/moment-with-locales.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus-bootstrap-4/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <script src="{% static 'lib/bootstrap-touchspin-4.3.0/jquery.bootstrap-touchspin.js' %}"></script>
+
+    <script src="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
+
+    <script src="{% static 'sale/js/form.js' %}"></script>
+
+    <script>
+        vents.items.products = {{det | safe}}
+            vents.list();
+        //console.log(det);
+    </script>
+
+{% endblock %}

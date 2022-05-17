@@ -1,0 +1,66 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block head_list %}
+
+{% endblock %}
+
+{% block columns %}
+    <tr>
+        <th scope="col">Nro</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Fecha de registro</th>
+        <th scope="col">Subtotal</th>
+        <th scope="col">Iva</th>
+        <th scope="col">Total</th>
+        <th scope="col">Opciones</th>
+    </tr>
+{% endblock %}
+
+{% block javascript %}
+    <!-- Required datatable js -->
+    <script src="{% static 'lib/plantilla/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Responsive examples -->
+    <script src="{% static 'lib/plantilla/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+    <script src="{% static 'lib/plantilla/libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'lib/plantilla/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'lib/plantilla/js/pages/datatables.init.js' %}"></script>
+
+    <script src="{% static 'sale/js/list.js' %}"></script>
+
+    <div class="modal fade" id="myModelDet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document"> <!-- modal-xl para extra large modal-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><b><i class="fas fa-info-circle"></i> Consulta
+                        detalle de productos</b></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="tblDet">
+                        <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>PVP</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

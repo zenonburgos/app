@@ -1,0 +1,43 @@
+{% extends 'list.html' %}
+{% load static %}
+{#{% block head_list %}#}
+{#    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>#}
+{#    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>#}
+{#    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>#}
+{#    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>#}
+{##}
+{#{% endblock %}#}
+
+{% block columns %}
+    <tr>
+        <th scope="col" style="width: 10%;">Nro</th>
+        <th scope="col" style="width: 20%;">Nombre</th>
+        <th scope="col" style="width: 25%;">Categoria</th>
+        <th scope="col" style="width: 10%;">Imagen</th>
+        <th scope="col" style="width: 15%;">Precio</th>
+        <th scope="col" style="width: 20%;">Opciones</th>
+    </tr>
+{% endblock %}
+
+{% block rows %}
+    {% for obj in object_list %}
+        <tr>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.name }}</td>
+            <td>{{ obj.cat.name }}</td>
+            <td class="text-center">
+{#                 {{ obj.image }}#}
+                <img src="{{ obj.get_image }}" class="img-fluid d-block mx-auto" style="width: 20px; height: 20px;">
+            </td>
+            <td>{{ obj.pvp }}</td>
+            <td class="text-center">
+                <a href="{% url 'erp:product_update' obj.id %}" class="btn btn-warning btn-xs btn-flat">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'erp:product_delete' obj.id %}" class="btn btn-danger btn-xs btn-flat">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}

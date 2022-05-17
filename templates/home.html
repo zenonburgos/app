@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'lib/plantilla/images/favicon.ico'  %}">
+
+    <!-- My css -->
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+
+    <!-- Select2 Css -->
+    <link href="{% static 'lib/plantilla/libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css">
+    <!-- Bootstrap Css -->
+    <link href="{% static 'lib/plantilla/css/bootstrap.min.css' %}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{% static 'lib/plantilla/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="{% static 'lib/plantilla/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+    <!-- Sweetalert2-->
+    <script src="{% static 'lib/sweetalert2-9.10.0/sweetalert2.all.min.js' %}"></script>
+
+{#    <!-- JQuery -->#}
+{#    <script src="{% static 'lib/plantilla/libs/jquery/jquery.min.js' %}"></script>#}
+
+{#    <!-- Jquery confirm -->#}
+{#    <link rel="stylesheet" href="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.css' %}" />#}
+{#    <script src="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.js' %}"></script>#}
+
+    {% block head %}
+    
+    {% endblock %}
+</head>
+{% block body %}
+
+{% endblock %}
+</html>
