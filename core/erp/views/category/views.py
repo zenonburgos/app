@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView, View
 from django.utils.decorators import method_decorator
 
 from core.erp.forms import CategoryForm
@@ -21,7 +21,7 @@ def category_list(request):
 
 
 class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
-    permission_required = 'erp.view_category'
+    permission_required = 'view_category'
     model = Category
     template_name = 'category/list.html'
 
@@ -38,8 +38,12 @@ class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, List
             action = request.POST['action']
             if action == 'searchdata':
                 data = []
+                position = 1
                 for i in Category.objects.all():
-                    data.append(i.toJSON())
+                    item = i.toJSON()
+                    item['position'] = position
+                    data.append(item)
+                    position += 1
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -69,7 +73,7 @@ class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, List
         return context
 
 
-class CategoryCreateView(ValidatePermissionRequiredMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     permission_required = 'erp.add_category'
     url_redirect = reverse_lazy('erp:category_list')
     model = Category
@@ -113,7 +117,7 @@ class CategoryCreateView(ValidatePermissionRequiredMixin, CreateView):
         return context
 
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = 'category/create.html'
@@ -146,7 +150,7 @@ class CategoryUpdateView(UpdateView):
         return context
 
 
-class CategoryDeleteView(DeleteView):
+class CategoryDeleteView(LoginRequiredMixin, ValidatePermissionRequiredMixin, DeleteView):
     model = Category
     template_name = 'category/delete.html'
     success_url = reverse_lazy('erp:category_list')
@@ -172,7 +176,7 @@ class CategoryDeleteView(DeleteView):
         return context
 
 
-class CategoryFormView(FormView):
+class CategoryFormView(LoginRequiredMixin, ValidatePermissionRequiredMixin, FormView):
     form_class = CategoryForm
     template_name = 'category/create.html'
     success_url = reverse_lazy('erp:category_list')

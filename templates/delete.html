@@ -40,14 +40,25 @@
         </div>
     </form>
     {% block javascript %}
-    <script>
-        $('form').on('submit', function (e) {
-            e.preventDefault();
-            var parameters = new FormData(this);
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de eliminar el siguiente registro?', parameters, function () {
-                location.href = '{{ list_url }}';
+        <script>
+
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                var parameters = new FormData(this);
+                submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de eliminar el siguiente registro?', parameters, function () {
+                    Swal.fire({
+                        title: 'Alerta',
+                        text: 'Registro eliminado correctamente',
+                        icon: 'success',
+                        timer: 5000,
+                        onClose: () => {
+                            location.href = '{{ list_url }}';
+                        }
+                    }).then((result) => {
+
+                    })
+                });
             });
-        });
-    </script>
+        </script>
     {% endblock %}
 {% endblock %}

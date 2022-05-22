@@ -4,5 +4,5 @@ from core.reports.views import ReportSaleView
 
 urlpatterns = [
     #reports
-    path('sale/list/', ReportSaleView.as_view(), name="category_list"),
+    path('sale/', ReportSaleView.as_view(), name="sale_report"),
 ]
