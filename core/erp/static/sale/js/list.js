@@ -47,7 +47,7 @@ $(function () {
                 defaultContent: '',
             },
             {"data": "id"},
-            {"data": "cli.names"},
+            {"data": "cli.full_name"},
             {"data": "date_joined"},
             {"data": "subtotal"},
             {"data": "iva"},

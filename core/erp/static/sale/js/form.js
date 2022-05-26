@@ -143,13 +143,45 @@ $(function () {
         language: 'es'
     });
 
-    $('#date_joined').datetimepicker({
-        format: 'YYYY-MM-DD',
-        date: moment().format("YYYY-MM-DD"),
+    //*********** ORIGINAL EN CLASE ****************///
+    // $('#date_joined').datetimepicker({
+    //     format: 'YYYY-MM-DD',
+    //     date: moment().format("YYYY-MM-DD"),
+    //     locale: 'es',
+    //     //minDate: moment().format("YYYY-MM-DD"), //Para establecer mínimos y máximos de fechas disponibles
+    //     //maxDate: moment().format("YYYY-MM-DD"),
+    // });
+
+    //*********** SOLUCION DE ALUMNO ****************///
+    // // Me guardo la fecha
+    // var fecha = input_datejoined.val();
+    //
+    // $('#date_joined').datetimepicker({
+    //     format: 'YYYY-MM-DD',
+    //     useCurrent: false,
+    //     keepOpen: false,
+    //     timepicker: false,
+    //     date: moment().format("YYYY-MM-DD"),
+    //     locale: 'es',
+    //     minDate: moment().format("YYYY-MM-DD")
+    // });
+    //
+    // // Le asignamos la fecha que tenia
+    // input_datejoined.datetimepicker('date', fecha);
+
+
+    //*********** SOLUCIÓN PROFESOR ****************///
+    var input_datejoined = $('input[name="date_joined"]');
+
+    input_datejoined.datetimepicker({
+        useCurrent: false,
+        format: 'DD-MM-YYYY',
         locale: 'es',
-        //minDate: moment().format("YYYY-MM-DD"),
-        maxDate: moment().format("YYYY-MM-DD"),
+        keepOpen: false,
     });
+
+    input_datejoined.datetimepicker('date', input_datejoined.val());
+    //*****************************************************
 
     $("input[name='iva']").TouchSpin({
         min: 0,
@@ -206,6 +238,9 @@ $(function () {
         parameters.append('action', 'create_client');
         submit_with_ajax(window.location.pathname, 'Notificación',
             '¿Estas seguro de crear al siguiente cliente?', parameters, function (response) {
+                //console.log(response)
+                var newOption = new Option(response.full_name, response.id, false, true);
+                $('select[name="cli"]').append(newOption).trigger('change');
                 $('#myModalClient').modal('hide');
             });
     });
@@ -297,8 +332,10 @@ $(function () {
             message_error('Debe al menos tener un item en su detalle de venta.');
             return false;
         }
-
-        vents.items.date_joined = $('input[name="date_joined"]').val();
+        //date: moment().format("YYYY-MM-DD"),
+        var xfec = $('input[name="date_joined"]').val();
+        xfec = moment().format("YYYY-MM-DD")
+        vents.items.date_joined = xfec
         vents.items.cli = $('select[name="cli"]').val();
 
         var parameters = new FormData();

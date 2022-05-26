@@ -99,7 +99,7 @@ class Client(BaseModel):
     gender = models.CharField(max_length=10, choices=gender_choices, default='male', verbose_name='Sexo')
 
     def __str__(self):
-        return self.names
+        return self.get_full_name()
 
     def get_full_name(self):
         return '{} {} / {}'.format(self.names, self.surnames, self.dni)
@@ -118,6 +118,7 @@ class Client(BaseModel):
         item = model_to_dict(self)
         item['gender'] = {'id': self.gender, 'name': self.get_gender_display()}
         item['date_birthday'] = self.date_birthday.strftime('%Y-%m-%d')
+        item['full_name'] = self.get_full_name()
         return item
 
     class Meta:
@@ -152,7 +153,7 @@ class Sale(BaseModel):
         item['subtotal'] = format(self.subtotal, '.2f')
         item['iva'] = format(self.iva, '.2f')
         item['total'] = format(self.total, '.2f')
-        item['date_joined'] = self.date_joined.strftime('%Y-%m-%d')
+        item['date_joined'] = self.date_joined.strftime('%d-%m-%Y')
         item['det'] = [i.toJSON() for i in self.detsale_set.all()]
         return item
 
