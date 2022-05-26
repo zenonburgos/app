@@ -101,6 +101,9 @@ class Client(BaseModel):
     def __str__(self):
         return self.names
 
+    def get_full_name(self):
+        return '{} {} / {}'.format(self.names, self.surnames, self.dni)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         user = get_current_user()

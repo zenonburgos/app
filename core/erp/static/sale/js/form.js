@@ -165,6 +165,51 @@ $(function () {
         vents.calculate_invoice();
     }).val(0.13);
 
+    //Search clients
+    $('select[name="cli"]').select2({
+        //theme: "bootstrap4",
+        language: 'es',
+        //allowClear: true, //no funciona con mi actual select2
+        ajax: {
+            delay: 250,
+            type: 'POST',
+            url: window.location.pathname,
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term,
+                    action: 'search_clients'
+                }
+
+                return queryParameters;
+            },
+            processResults: function (data) {
+                return {
+                    results: data
+                };
+            },
+        },
+        placeholder: 'Ingrese una descripción',
+        minimumInputLength: 1
+    });
+
+    $('.btnAddClient').on('click', function () {
+        $('#myModalClient').modal('show');
+    });
+
+    $('#myModalClient').on('hidden.bs.modal', function (e) {
+        $('#frmClient').trigger('reset');
+    })
+
+    $('#frmClient').on('submit', function (e) {
+        e.preventDefault();
+        var parameters = new FormData(this);
+        parameters.append('action', 'create_client');
+        submit_with_ajax(window.location.pathname, 'Notificación',
+            '¿Estas seguro de crear al siguiente cliente?', parameters, function (response) {
+                $('#myModalClient').modal('hide');
+            });
+    });
+
     // Search products
     /*$('input[name="search"]').autocomplete({
         source: function (request, response) {
@@ -204,7 +249,7 @@ $(function () {
         alert_action('Notificación', '¿Seguro en eliminar todos los items del detalle?', function () {
             vents.items.products = [];
             vents.list();
-        }, function(){
+        }, function () {
 
         });
     });
@@ -216,7 +261,7 @@ $(function () {
             alert_action('Notificación', '¿Seguro en eliminar todos los items del detalle?', function () {
                 vents.items.products.splice(tr.row, 1);
                 vents.list();
-            }, function(){
+            }, function () {
 
             });
         })
@@ -245,7 +290,7 @@ $(function () {
     });
 
     //event submit
-    $('form').on('submit', function (e) {
+    $('#frmSale').on('submit', function (e) {
         e.preventDefault();
 
         if (vents.items.products.length === 0) {
@@ -260,10 +305,10 @@ $(function () {
         parameters.append('action', $('input[name="action"]').val());
         parameters.append('vents', JSON.stringify(vents.items));
         submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de guardar el siguiente registro?', parameters, function (response) {
-            alert_action('Notificación', '¿Desea imprimir la factura de venta?', function(){
-                window.open('/erp/sale/invoice/pdf/'+response.id+'/', '_blank');
+            alert_action('Notificación', '¿Desea imprimir la factura de venta?', function () {
+                window.open('/erp/sale/invoice/pdf/' + response.id + '/', '_blank');
                 location.href = '/erp/sale/list/';
-            }, function (){
+            }, function () {
                 location.href = '/erp/sale/list/';
             });
         });

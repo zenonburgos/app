@@ -1,4 +1,3 @@
-from django.forms import *
 from django import forms
 from django.forms import ModelForm
 from core.user.models import User

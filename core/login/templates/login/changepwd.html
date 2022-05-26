@@ -13,7 +13,7 @@
                             <div class="bg-login-overlay"></div>
                             <div class="position-relative">
                                 <h5 class="text-white font-size-20">¡ Bienvenido !</h5>
-                                <p class="text-white-50 mb-0">Reseteo de contraseña.</p>
+                                <p class="text-white-50 mb-0">Cambio de contraseña.</p>
                                 <a href="index.html" class="logo logo-admin mt-4">
                                     <img src="{% static 'lib/plantilla/images/logo-sm-dark.png' %}" alt="" height="30">
                                 </a>
@@ -25,13 +25,17 @@
                                     <input type="hidden" name="next" value="{{ next }}">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="username">Username</label>
-                                        {{ form.username }}
+                                        <label for="password">Ingrese nueva contraseña</label>
+                                        {{ form.password }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Confirmar contraseña</label>
+                                        {{ form.confirmPassword }}
                                     </div>
 
                                     <div class="mt-3">
                                         <button class="btn btn-primary btn-block waves-effect waves-light"
-                                                type="submit"> Enviar
+                                                type="submit"> Cambiar contraseña
                                         </button>
                                     </div>
                                     <p class="text-center mt-2" style="font-size: 13px;">
@@ -47,14 +51,14 @@
                                 $('form').on('submit', function (e) {
                                     e.preventDefault();
                                     var parameters = new FormData(this);
-                                    submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de resetear tu contraseña?', parameters, function () {
+                                    submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de cambiar tu contraseña?', parameters, function () {
                                         Swal.fire({
-                                            title: 'Revise su buzón de correo electrónico',
-                                            text: 'Se ha enviado un correo electrónico mostrando los pasos a seguir para resetear su contraseña.',
+                                            title: 'Notificación',
+                                            text: 'Tu contraseña ha sido cambiada correctamente.',
                                             icon: 'success',
                                             timer: 20000,
                                             onClose: () => {
-                                                location.href = '/';
+                                                location.href = '{{ login_url }}';
                                             }
                                         }).then((result) => {
 

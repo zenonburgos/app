@@ -165,6 +165,8 @@ class ClientForm(ModelForm):
 class SaleForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['cli'].queryset = Client.objects.none()
+
         # for form in self.visible_fields():
         #     form.field.widget.attrs['class'] = 'form-control'
         #     form.field.widget.attrs['autocomplete'] = 'off'
@@ -188,8 +190,8 @@ class SaleForm(ModelForm):
         fields = '__all__'
         widgets = {
             'cli': Select(attrs={
-                'class': 'form-control select2',
-                'style': 'width: 100%'
+                'class': 'custom-select select2',
+                # 'style': 'width: 100%'
             }),
             'date_joined': DateInput(
                 format='%d-%m-%Y',

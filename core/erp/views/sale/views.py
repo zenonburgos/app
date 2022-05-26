@@ -11,9 +11,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, ListView, DeleteView, UpdateView, View
 
-from core.erp.forms import SaleForm
+from core.erp.forms import SaleForm, ClientForm
 from core.erp.mixins import ValidatePermissionRequiredMixin
-from core.erp.models import Sale, Product, DetSale
+from core.erp.models import Sale, Product, DetSale, Client
 
 import os
 from django.conf import settings
@@ -109,6 +109,19 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
                         det.subtotal = float(i['subtotal'])
                         det.save()
                     data = {'id': sale.id}
+            elif action == 'search_clients':
+                data = []
+                term = request.POST['term']
+                clients = Client.objects.filter(Q(names__icontains=term) | Q(surnames__icontains=term) | Q(dni__icontains=term))[0:10]
+                for i in clients:
+                    item = i.toJSON()
+                    item['text'] = i.get_full_name()
+                    data.append(item)
+            elif action == 'create_client':
+                # print(request.POST)
+                with transaction.atomic():
+                    frmClient = ClientForm(request.POST)
+                    data = frmClient.save()
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'
         except Exception as e:
@@ -122,6 +135,7 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
         context['list_url'] = self.success_url
         context['action'] = 'add'
         context['det'] = []
+        context['frmClient'] = ClientForm()
         return context
 
 
@@ -169,6 +183,19 @@ class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Update
                         det.subtotal = float(i['subtotal'])
                         det.save()
                     data = {'id': sale.id}
+            elif action == 'search_clients':
+                data = []
+                term = request.POST['term']
+                clients = Client.objects.filter(Q(names__icontains=term) | Q(surnames__icontains=term) | Q(dni__icontains=term))[0:10]
+                for i in clients:
+                    item = i.toJSON()
+                    item['text'] = i.get_full_name()
+                    data.append(item)
+            elif action == 'create_client':
+                # print(request.POST)
+                with transaction.atomic():
+                    frmClient = ClientForm(request.POST)
+                    data = frmClient.save()
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'
         except Exception as e:
@@ -194,6 +221,7 @@ class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Update
         context['action'] = 'edit'
         # context['sale'] = Sale.objects.get(pk=self.kwargs['pk'])
         context['det'] = json.dumps(self.get_details_product(), cls=DjangoJSONEncoder)
+        context['frmClient'] = ClientForm()
         return context
 
 

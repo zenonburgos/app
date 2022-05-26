@@ -155,3 +155,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'znburgos@gmail.com'
 
 EMAIL_HOST_PASSWORD = 'qavglbcdobjszuim'
+
+DOMAIN = ''
