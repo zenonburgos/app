@@ -32,6 +32,25 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <label>Buscador de Productos</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-info dropdown-toggle" type="button"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                ...
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item btnSearchProducts">
+                                                    <i class="fas fa-search"></i> Buscar productos
+                                                </a>
+                                                <div role="separator" class="dropdown-divider"></div>
+                                                <a class="dropdown-item btnClearSearch">
+                                                    <i class="fas fa-times"></i> Limpiar búsqueda
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <select class="form-control select2" name="search"></select>
+                                        <!--<input type="text" class="form-control" autocomplete="off" maxlength="50" name="search" placeholder="Ingrese una descripción">-->
+                                    </div>
                                     <div class="input-group">
                                         <!-- <input type="text" class="form-control" name="search"
                                                 placeholder="Ingrese una palabra clave para búsqueda de productos"
@@ -40,8 +59,7 @@
                                          <button type="button" class="btn btn-danger btnClearSearch"><i
                                                  class="fas fa-times"></i></button>
                                          </span> -->
-                                        <select class="form-control select2" name="search">
-                                        </select>
+
                                     </div>
                                 </div>
                                 <hr>
@@ -55,6 +73,7 @@
                                         <th>Eliminar</th>
                                         <th>Producto</th>
                                         <th>Modelo</th>
+                                        <th>Stock</th>
                                         <th>Precio Ven.</th>
                                         <th>Cantidad</th>
                                         <th>Subtotal</th>
@@ -150,6 +169,37 @@
                 </div>
             </div>
         </form>
+    </div>
+
+    <div class="modal fade" id="myModalSearchProducts" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <b><i class="fas fa-search"></i> Búsqueda de Productos</b>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover" id="tblSearchProducts">
+                        <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Imagen</th>
+                            <th>Stock</th>
+                            <th>Precio Unitario</th>
+                            <th>Opciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 

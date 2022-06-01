@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'core.login',
     'core.user',
     'core.reports',
+    'import_export',
 ]
 
 MIDDLEWARE = [

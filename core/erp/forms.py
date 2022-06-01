@@ -168,24 +168,6 @@ class SaleForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['cli'].queryset = Client.objects.none()
 
-        # for form in self.visible_fields():
-        #     form.field.widget.attrs['class'] = 'form-control'
-        #     form.field.widget.attrs['autocomplete'] = 'off'
-
-        # forma 1
-        # self.fields['cli'].widget.attrs['autofocus'] = True
-        # self.fields['cli'].widget.attrs['class'] = 'form-control select2'
-        # self.fields['cli'].widget.attrs['style'] = 'width: 100%'
-
-        # # forma 2
-        # self.fields['date_joined'].widget.attrs = {
-        #     'autocomplete': 'off',
-        #     'class': 'form-control datetimepicker-input',
-        #     'id': 'date_joined',
-        #     'data-target': '#date_joined',
-        #     'data-toggle': 'datetimepicker'
-        # }
-
     class Meta:
         model = Sale
         fields = '__all__'

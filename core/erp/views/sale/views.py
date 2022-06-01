@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, ListView, DeleteView, UpdateView, View
+from weasyprint import HTML, CSS
 
 from core.erp.forms import SaleForm, ClientForm
 from core.erp.mixins import ValidatePermissionRequiredMixin
@@ -63,7 +64,7 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
     model = Sale
     form_class = SaleForm
     template_name = 'Sale/create.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('erp:sale_list')
     permission_required = 'erp.add_sale'
     url_redirect = success_url
 
@@ -77,18 +78,26 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
             action = request.POST['action']
             if action == 'search_products':
                 data = []
-                prods = Product.objects.filter(Q(name__icontains=request.POST['term']) |
-                                               Q(modelo__icontains=request.POST['term']) |
-                                               Q(marca__icontains=request.POST['term']) |
-                                               Q(tags__icontains=request.POST['term'])
-                                               )[0:10]
-                for i in prods:
+                term = request.POST['term']
+                products = Product.objects.filter(stock__gt=0)
+                if len(term):
+                    products = products.filter(name__icontains=term)
+                for i in products[0:10]:
                     item = i.toJSON()
                     # Para ser usado en inputs normales de autocompletado con jquery-ui:
-                    # item['value'] = i.name + ' ' + i.modelo + ' ' + i.marca
+                    item['value'] = i.name
 
                     # Para ser usado con select2:
-                    item['text'] = i.name + ' ' + i.modelo + ' ' + i.marca
+                    # item['text'] = i.name + ' ' + i.modelo + ' ' + i.marca
+                    data.append(item)
+            elif action == 'search_autocomplete':
+                data = []
+                term = request.POST['term']
+                data.append({'id': term, 'text': term})
+                products = Product.objects.filter(name__icontains=term, stock__gt=0)
+                for i in products[0:10]:
+                    item = i.toJSON()
+                    item['text'] = i.name
                     data.append(item)
             elif action == 'add':
                 with transaction.atomic():
@@ -108,6 +117,10 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
                         det.price = float(i['pvp'])
                         det.subtotal = float(i['subtotal'])
                         det.save()
+                        # prod = Product.objects.get(pk=det.prod_id)
+                        # prod.stock = prod.stock = -
+                        det.prod.stock -= det.cant
+                        det.prod.save()
                     data = {'id': sale.id}
             elif action == 'search_clients':
                 data = []
@@ -163,10 +176,26 @@ class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Update
             action = request.POST['action']
             if action == 'search_products':
                 data = []
-                prods = Product.objects.filter(name__icontains=request.POST['term'])[0:10]
-                for i in prods:
+                term = request.POST['term']
+                products = Product.objects.filter(stock__gt=0)
+                if len(term):
+                    products = products.filter(name__icontains=term)
+                for i in products[0:10]:
                     item = i.toJSON()
+                    # Para ser usado en inputs normales de autocompletado con jquery-ui:
                     item['value'] = i.name
+
+                    # Para ser usado con select2:
+                    # item['text'] = i.name + ' ' + i.modelo + ' ' + i.marca
+                    data.append(item)
+            elif action == 'search_autocomplete':
+                data = []
+                term = request.POST['term']
+                data.append({'id': term, 'text': term})
+                products = Product.objects.filter(name__icontains=term, stock__gt=0)
+                for i in products[0:10]:
+                    item = i.toJSON()
+                    item['text'] = i.name
                     data.append(item)
             elif action == 'edit':
                 with transaction.atomic():
@@ -188,6 +217,8 @@ class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Update
                         det.price = float(i['pvp'])
                         det.subtotal = float(i['subtotal'])
                         det.save()
+                        det.prod.stock -= det.cant
+                        det.prod.save()
                     data = {'id': sale.id}
             elif action == 'search_clients':
                 data = []
@@ -257,34 +288,57 @@ class SaleDeleteView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Delete
         context['list_url'] = self.success_url
         return context
 
+# Con Librería xhtml2pdf
+# class SaleInvoicePdfView(View):
+#
+#     def link_callback(self, uri, rel):
+#         """
+#         Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+#         resources
+#         """
+#         # use short variable names
+#         sUrl = settings.STATIC_URL  # Typically /static/
+#         sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
+#         mUrl = settings.MEDIA_URL  # Typically /static/media/
+#         mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
+#
+#         # convert URIs to absolute system paths
+#         if uri.startswith(mUrl):
+#             path = os.path.join(mRoot, uri.replace(mUrl, ""))
+#         elif uri.startswith(sUrl):
+#             path = os.path.join(sRoot, uri.replace(sUrl, ""))
+#         else:
+#             return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+#
+#         # make sure that file exists
+#         if not os.path.isfile(path):
+#             raise Exception(
+#                 'media URI must start with %s or %s' % (sUrl, mUrl)
+#             )
+#         return path
+#
+#     def get(self, request, *args, **kwargs):
+#         try:
+#             template = get_template('sale/invoice.html')
+#             context = {
+#                 'sale': Sale.objects.get(pk=self.kwargs['pk']),
+#                 'comp': {'name': 'ALGORISOFT S.A.', 'ruc': '9999999999999', 'address': 'Milagro, Ecuador'},
+#                 'icon': '{}{}'.format(settings.MEDIA_URL, 'logo.png')
+#             }
+#             html = template.render(context)
+#             response = HttpResponse(content_type='application/pdf')
+#             #response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+#             pisaStatus = pisa.CreatePDF(
+#                 html, dest=response,
+#                 link_callback=self.link_callback
+#             )
+#             return response
+#         except:
+#             pass
+#         return HttpResponseRedirect(reverse_lazy('erp:sale_list'))
+#
 
 class SaleInvoicePdfView(View):
-
-    def link_callback(self, uri, rel):
-        """
-        Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-        resources
-        """
-        # use short variable names
-        sUrl = settings.STATIC_URL  # Typically /static/
-        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
-        mUrl = settings.MEDIA_URL  # Typically /static/media/
-        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
-
-        # convert URIs to absolute system paths
-        if uri.startswith(mUrl):
-            path = os.path.join(mRoot, uri.replace(mUrl, ""))
-        elif uri.startswith(sUrl):
-            path = os.path.join(sRoot, uri.replace(sUrl, ""))
-        else:
-            return uri  # handle absolute uri (ie: http://some.tld/foo.png)
-
-        # make sure that file exists
-        if not os.path.isfile(path):
-            raise Exception(
-                'media URI must start with %s or %s' % (sUrl, mUrl)
-            )
-        return path
 
     def get(self, request, *args, **kwargs):
         try:
@@ -295,14 +349,9 @@ class SaleInvoicePdfView(View):
                 'icon': '{}{}'.format(settings.MEDIA_URL, 'logo.png')
             }
             html = template.render(context)
-            response = HttpResponse(content_type='application/pdf')
-            #response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-            pisaStatus = pisa.CreatePDF(
-                html, dest=response,
-                link_callback=self.link_callback
-            )
-            return response
+            css_url = os.path.join(settings.BASE_DIR, 'static/lib/plantilla/libs/bootstrap/css/bootstrap.min.css')
+            pdf = HTML(string=html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(css_url)])
+            return HttpResponse(pdf, content_type='application/pdf')
         except:
             pass
         return HttpResponseRedirect(reverse_lazy('erp:sale_list'))
-

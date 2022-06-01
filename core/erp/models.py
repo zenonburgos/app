@@ -52,10 +52,9 @@ class Product(BaseModel):
     factor = models.FloatField(default=0.00)
     factor_2 = models.FloatField(default=0.00)
     factor_3 = models.FloatField(default=0.00)
-    existencia = models.IntegerField(default=0)
     ultima_compra = models.DateField(null=True, blank=True)
     tags = models.CharField(max_length=150, null=True, blank=True)
-
+    stock = models.IntegerField(default=0, verbose_name='Stock')
     cat = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Categoría')
     image = models.ImageField(upload_to='product/%Y/%m/%d', null=True, blank=True, verbose_name='Imagen')
 
@@ -74,6 +73,7 @@ class Product(BaseModel):
 
     def toJSON(self):
         item = model_to_dict(self)
+        item['full_name'] = '{} / {}'.format(self.name, self.cat.name)
         item['cat'] = self.cat.toJSON()
         item['image'] = self.get_image()
         item['pvp'] = format(self.pvp, '.2f')
@@ -156,6 +156,12 @@ class Sale(BaseModel):
         item['date_joined'] = self.date_joined.strftime('%d-%m-%Y')
         item['det'] = [i.toJSON() for i in self.detsale_set.all()]
         return item
+
+    def delete(self, using=None, keep_parents=False):
+        for det in self.detsale_set.all():
+            det.prod.stock += det.cant
+            det.prod.save()
+        super(Sale, self).delete()
 
     class Meta:
         verbose_name = 'Venta'

@@ -1,4 +1,6 @@
 var tblProducts;
+var tblSearchProducts;
+
 var vents = {
     items: {
         cli: '',
@@ -39,9 +41,9 @@ var vents = {
             data: this.items.products,
             columns: [
                 {"data": "id"},
-                {"data": "name"},
-                // {"data": "cat.name"},
+                {"data": "full_name"},
                 {"data": "modelo"},
+                {"data": "stock"},
                 {"data": "pvp"},
                 {"data": "cant"},
                 {"data": "subtotal"},
@@ -56,20 +58,11 @@ var vents = {
                     }
                 },
                 {
-                    targets: [-3], //columna 3
+                    targets: [-4],
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        // return '$'+parseFloat(data).toFixed(2);
-                        return '<input type="number" name="pvp" min="0" step="any" class="form-control form-control-sm input-sm inputNum" autocomplete="off" value="' + row.pvp + '" input onClick="this.select();">';
-                    }
-                },
-                {
-                    targets: [-4],
-                    class: 'text-center',
-                    orderable: true,
-                    render: function (data, type, row) {
-                        return '<label class="small">' + row.modelo + '</label>';
+                        return '<span class="badge badge-secondary">'+data+'</span>';
                     }
                 },
                 {
@@ -77,7 +70,25 @@ var vents = {
                     class: 'text-center',
                     orderable: true,
                     render: function (data, type, row) {
+                        return '<label class="small">' + row.modelo + '</label>';
+                    }
+                },
+                {
+                    targets: [-6],
+                    class: 'text-center',
+                    orderable: true,
+                    render: function (data, type, row) {
                         return '<label class="small">' + row.name + '</label>';
+                    }
+                },
+                {
+                    targets: [-3],
+                    class: 'text-center',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        //return '$'+parseFloat(data).toFixed(2);
+                        //return '<input type="number" name="pvp" min="0" step="any" class="form-control form-control-sm input-sm inputNum" autocomplete="off" value="' + row.pvp + '" input onClick="this.select();">';
+                        return '<input type="text" name="pvp" class="form-control form-control-sm input-sm inputNum" autocomplete="off" value="' + row.pvp + '" style="width: 150px;">';
                     }
                 },
                 {
@@ -101,9 +112,15 @@ var vents = {
                 $(row).find('input[name="cant"]').TouchSpin({
                     min: 1,
                     max: 10000000,
+                    //max: data.stock,
                     step: 1
                 });
-
+                $(row).find('input[name="pvp"]').TouchSpin({
+                    min: 1,
+                    max: 10000000,
+                    decimals: 2,
+                    step: 1
+                });
             },
             initComplete: function (settings, json) {
 
@@ -117,6 +134,10 @@ function formatRepo(repo) {
         return repo.text;
     }
 
+    if (!Number.isInteger(repo.id)) {
+        return repo.text;
+    }
+
     var option = $(
         '<div class="wrapper container">' +
         '<div class="row">' +
@@ -126,8 +147,8 @@ function formatRepo(repo) {
         '<div class="col-lg-11 text-left shadow-sm">' +
         //'<br>' +
         '<p style="margin-bottom: 0;">' +
-        '<b>Nombre:</b> ' + repo.name + '<br>' +
-        '<b>Categoría:</b> ' + repo.cat.name + '<br>' +
+        '<b>Nombre:</b> ' + repo.full_name + '<br>' +
+        '<b>Stock:</b> ' + repo.stock + '<br>' +
         '<b>PVP:</b> <span class="badge badge-warning">$' + repo.pvp + '</span>' +
         '</p>' +
         '</div>' +
@@ -142,33 +163,6 @@ $(function () {
         //theme: "bootstrap4",
         language: 'es'
     });
-
-    //*********** ORIGINAL EN CLASE ****************///
-    // $('#date_joined').datetimepicker({
-    //     format: 'YYYY-MM-DD',
-    //     date: moment().format("YYYY-MM-DD"),
-    //     locale: 'es',
-    //     //minDate: moment().format("YYYY-MM-DD"), //Para establecer mínimos y máximos de fechas disponibles
-    //     //maxDate: moment().format("YYYY-MM-DD"),
-    // });
-
-    //*********** SOLUCION DE ALUMNO ****************///
-    // // Me guardo la fecha
-    // var fecha = input_datejoined.val();
-    //
-    // $('#date_joined').datetimepicker({
-    //     format: 'YYYY-MM-DD',
-    //     useCurrent: false,
-    //     keepOpen: false,
-    //     timepicker: false,
-    //     date: moment().format("YYYY-MM-DD"),
-    //     locale: 'es',
-    //     minDate: moment().format("YYYY-MM-DD")
-    // });
-    //
-    // // Le asignamos la fecha que tenia
-    // input_datejoined.datetimepicker('date', fecha);
-
 
     //*********** SOLUCIÓN PROFESOR ****************///
     var input_datejoined = $('input[name="date_joined"]');
@@ -289,7 +283,7 @@ $(function () {
         });
     });
 
-    // event cant
+    // event cant y pvp
     $('#tblProducts tbody')
         .on('click', 'a[rel="remove"]', function () {
             var tr = tblProducts.cell($(this).closest('td, li')).index();
@@ -305,24 +299,107 @@ $(function () {
             var tr = tblProducts.cell($(this).closest('td, li')).index();
             vents.items.products[tr.row].cant = cant;
             vents.calculate_invoice();
-            $('td:eq(5)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
+            $('td:eq(6)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
+        }).on('change keyup', 'input[name="pvp"]', function () {
+            var pvp = parseInt($(this).val());
+            var tr = tblProducts.cell($(this).closest('td, li')).index();
+            vents.items.products[tr.row].pvp = pvp;
+            vents.calculate_invoice();
+            $('td:eq(6)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
         });
 
+
     // event pvp
-    $('#tblProducts tbody').on('change keyup', 'input[name="pvp"]', function () {
-        if (Number.isNaN(this.valueAsNumber)) {
-            this.value = 0;
-        }
-        var pvp = parseFloat($(this).val());
-        var tr = tblProducts.cell($(this).closest('td, li')).index();
-        vents.items.products[tr.row].pvp = pvp;
-        vents.calculate_invoice();
-        $('td:eq(5)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
-    });
+    // $('#tblProducts tbody').on('change keyup', 'input[name="pvp"]', function () {
+    //     if (Number.isNaN(this.valueAsNumber)) {
+    //         this.value = 0;
+    //     }
+    //     var pvp = parseFloat($(this).val());
+    //     var tr = tblProducts.cell($(this).closest('td, li')).index();
+    //     vents.items.products[tr.row].pvp = pvp;
+    //     vents.calculate_invoice();
+    //     $('td:eq(6)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
+    // });
 
     $('.btnClearSearch').on('click', function () {
         $('input[name="search"]').val('').focus();
     });
+
+    $('.btnSearchProducts').on('click', function () {
+        tblSearchProducts = $('#tblSearchProducts').DataTable({
+            responsive: true,
+            autoWidth: false,
+            destroy: true,
+            deferRender: true,
+            ajax: {
+                url: window.location.pathname,
+                type: 'POST',
+                data: {
+                    'action': 'search_products',
+                    'term': $('select[name="search"]').val()
+                },
+                dataSrc: ""
+            },
+            columns: [
+                {"data": "full_name"},
+                {"data": "image"},
+                {"data": "stock"},
+                {"data": "pvp"},
+                {"data": "id"},
+            ],
+            columnDefs: [
+                {
+                    targets: [-4],
+                    class: 'text-center',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return '<img src="' + data + '" class="img-fluid d-block mx-auto" style="width: 20px; height: 20px;">';
+                    }
+                },
+                {
+                    targets: [-3],
+                    class: 'text-center',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return '<span class="badge badge-secondary">'+data+'</span>';
+                    }
+                },
+                {
+                    targets: [-2],
+                    class: 'text-center',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return '$' + parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    targets: [-1],
+                    class: 'text-center',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        var buttons = '<a rel="add" class="btn btn-success btn-xs btn-flat"><i class="fas fa-plus"></i></a> ';
+                        return buttons;
+                    }
+                },
+            ],
+            initComplete: function (settings, json) {
+
+            }
+        });
+        $('#myModalSearchProducts').modal('show');
+    });
+
+    $('#tblSearchProducts tbody')
+        .on('click', 'a[rel="add"]', function () {
+            var tr = tblSearchProducts.cell($(this).closest('td, li')).index();
+            var product = tblSearchProducts.row(tr.row).data();
+            product.cant = 1;
+            product.subtotal = 0.00;
+            vents.add(product);
+            tblSearchProducts.row($(this).parents('tr')).remove().draw();
+        });
+
+    //$('#myModalSearchProducts').modal('show');
 
     //event submit
     $('#frmSale').on('submit', function (e) {
@@ -363,7 +440,7 @@ $(function () {
             data: function (params) {
                 var queryParameters = {
                     term: params.term,
-                    action: 'search_products'
+                    action: 'search_autocomplete'
                 }
                 return queryParameters;
             },
@@ -378,9 +455,16 @@ $(function () {
         templateResult: formatRepo
     }).on('select2:select', function (e) {
         var data = e.params.data;
+        if(!Number.isInteger(data.id)){
+            return false;
+        }
         data.cant = 1;
         data.subtotal = 0.00;
         vents.add(data);
         $(this).val('').trigger('change.select2');
     });
+
+    // Esto se puso aqui para que funcione bien el editar y calcule bien los valores del iva. // sino tomaría el valor del iva de la base debe
+    // coger el que pusimos al inicializarlo.
+    vents.list();
 });
