@@ -20,6 +20,9 @@ from core.login.views import *
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import handler404
+from core.erp.views.dashboard.views import page_not_found404
+
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -29,5 +32,7 @@ urlpatterns = [
     path('reports/', include('core.reports.urls')),
     path('user/', include('core.user.urls')),
 ]
+
+handler404 = page_not_found404
 
 urlpatterns += static(setting.MEDIA_URL, document_root=settings.MEDIA_ROOT)

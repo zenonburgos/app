@@ -62,7 +62,7 @@ var vents = {
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        return '<span class="badge badge-secondary">'+data+'</span>';
+                        return '<span class="badge badge-secondary">' + data + '</span>';
                     }
                 },
                 {
@@ -164,18 +164,29 @@ $(function () {
         language: 'es'
     });
 
-    //*********** SOLUCIÓN PROFESOR ****************///
-    var input_datejoined = $('input[name="date_joined"]');
+    if ($('input[name="action"]').val() === 'edit') {
+        //*********** SOLUCIÓN PROFESOR ****************///
 
-    input_datejoined.datetimepicker({
-        useCurrent: false,
-        format: 'DD-MM-YYYY',
-        locale: 'es',
-        keepOpen: false,
-    });
+        var fecOld = $('input[name="date_joined"]');
+        var input_datejoined = $('input[name="date_joined"]');
 
-    input_datejoined.datetimepicker('date', input_datejoined.val());
-    //*****************************************************
+        input_datejoined.datetimepicker({
+            useCurrent: false,
+            format: 'YYYY-MM-DD',
+            locale: 'es',
+            keepOpen: false,
+        });
+
+        input_datejoined.datetimepicker('date', input_datejoined.val());
+        //*****************************************************
+    } else {
+        $('#date_joined').datetimepicker({
+            format: 'DD-MM-YYYY',
+            date: moment().format("LL"),
+            locale: 'es',
+            //minDate: moment().format("YYYY-MM-DD")
+        });
+    }
 
     $("input[name='iva']").TouchSpin({
         min: 0,
@@ -301,12 +312,12 @@ $(function () {
             vents.calculate_invoice();
             $('td:eq(6)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
         }).on('change keyup', 'input[name="pvp"]', function () {
-            var pvp = parseInt($(this).val());
-            var tr = tblProducts.cell($(this).closest('td, li')).index();
-            vents.items.products[tr.row].pvp = pvp;
-            vents.calculate_invoice();
-            $('td:eq(6)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
-        });
+        var pvp = parseInt($(this).val());
+        var tr = tblProducts.cell($(this).closest('td, li')).index();
+        vents.items.products[tr.row].pvp = pvp;
+        vents.calculate_invoice();
+        $('td:eq(6)', tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
+    });
 
 
     // event pvp
@@ -361,7 +372,7 @@ $(function () {
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        return '<span class="badge badge-secondary">'+data+'</span>';
+                        return '<span class="badge badge-secondary">' + data + '</span>';
                     }
                 },
                 {
@@ -409,10 +420,13 @@ $(function () {
             message_error('Debe al menos tener un item en su detalle de venta.');
             return false;
         }
-        //date: moment().format("YYYY-MM-DD"),
         var xfec = $('input[name="date_joined"]').val();
-        xfec = moment().format("YYYY-MM-DD")
-        vents.items.date_joined = xfec
+
+        if ($('input[name="action"]').val() === 'add') {
+            xfec = moment(xfec, "DD/MM/YYYY").format("YYYY-MM-DD")
+        }
+
+        vents.items.date_joined = xfec;
         vents.items.cli = $('select[name="cli"]').val();
 
         var parameters = new FormData();
@@ -455,7 +469,7 @@ $(function () {
         templateResult: formatRepo
     }).on('select2:select', function (e) {
         var data = e.params.data;
-        if(!Number.isInteger(data.id)){
+        if (!Number.isInteger(data.id)) {
             return false;
         }
         data.cant = 1;

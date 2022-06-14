@@ -177,9 +177,9 @@ class SaleForm(ModelForm):
                 # 'style': 'width: 100%'
             }),
             'date_joined': DateInput(
-                format='%d-%m-%Y',
+                format='%Y-%m-%d',
                 attrs={
-                    'value': datetime.now().strftime('%d-%m-%Y'),
+                    'value': datetime.now().strftime('%Y-%m-%d'),
                     'autocomplete': 'off',
                     'class': 'form-control datetimepicker-input',
                     'id': 'date_joined',

@@ -16,9 +16,9 @@ class ProductListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListV
     template_name = 'product/list.html'
     permission_required = 'view_product', 'change_product', 'delete_product', 'add_product'
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    # @method_decorator(csrf_exempt)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         data = {}

@@ -37,7 +37,10 @@ $(function () {
             data: {
                 'action': 'searchdata'
             },
-            dataSrc: ""
+            dataSrc: "",
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
         },
         columns: [
             {
@@ -99,7 +102,10 @@ $(function () {
                         'action': 'search_details_prod',
                         'id': data.id
                     },
-                    dataSrc: ""
+                    dataSrc: "",
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    }
                 },
                 columns: [
                     {"data": "prod.name"},

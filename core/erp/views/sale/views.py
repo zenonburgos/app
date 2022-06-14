@@ -29,9 +29,9 @@ class SaleListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView
     template_name = 'sale/list.html'
     permission_required = 'erp.view_sale'
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    # @method_decorator(csrf_exempt)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         data = {}
@@ -63,7 +63,7 @@ class SaleListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView
 class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model = Sale
     form_class = SaleForm
-    template_name = 'Sale/create.html'
+    template_name = 'sale/create.html'
     success_url = reverse_lazy('erp:sale_list')
     permission_required = 'erp.add_sale'
     url_redirect = success_url
@@ -245,6 +245,7 @@ class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Update
             for i in DetSale.objects.filter(sale_id=self.get_object().id):
                 item = i.prod.toJSON()
                 item['cant'] = i.cant
+                item['pvp'] = i.price
                 data.append(item)
         except:
             pass
@@ -338,7 +339,7 @@ class SaleDeleteView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Delete
 #         return HttpResponseRedirect(reverse_lazy('erp:sale_list'))
 #
 
-class SaleInvoicePdfView(View):
+class SaleInvoicePdfView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         try:

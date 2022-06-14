@@ -201,6 +201,7 @@
             </div>
         </div>
     </div>
+    {{ value|json_script:"hello-data" }}
 {% endblock %}
 
 {% block javascript %}
@@ -225,12 +226,13 @@
 
     <script src="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
 
+    <script id="hello-data" type="application/json">{"hello": "world"}</script>
+
     <script src="{% static 'sale/js/form.js' %}"></script>
 
     <script>
         vents.items.products = {{det | safe}}
             vents.list();
-        //console.log(det);
     </script>
 
 {% endblock %}

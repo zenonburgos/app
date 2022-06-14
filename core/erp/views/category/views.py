@@ -25,10 +25,13 @@ class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, List
     model = Category
     template_name = 'category/list.html'
 
-    @method_decorator(csrf_exempt)
-    # @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    # Lo siguiente se hacía para poder listar pero no tenía seguridad,
+    # ahora enviamos la seguridad por ajax para listar
+
+    # @method_decorator(csrf_exempt)
+    # # @method_decorator(login_required)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         data = {}
